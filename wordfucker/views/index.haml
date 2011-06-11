@@ -2,7 +2,7 @@
 %html
   %head
     %script{:src => "jquery-1.4.2.min.js"}
-    %script{:src => "jquery-ui-1.7.1.custom.min.js"}
+    %script{:src => "jquery-ui-1.8.13.custom.min.js"}
 
   %body
     %h1#title
@@ -95,14 +95,6 @@
   }
 
 :javascript
-
-  var puzzles = [
-      [2,"acidic", ["acidic","acid","cad","aid"]],
-      [3,"cafe", ["cafe", "face", "ace"]],
-      [4,"canyon", ["canyon","annoy","canny","canon","anon","cony","cyan","nay","yon","any","can","cay","con","coy"]],
-      [5, "tapers", [ "repast", "prates", "tapers", "septa", "spare", "spate", "spear", "sprat", "stare", "strap", "strep", "rapes", "rates", "reaps", "pares", "parse", "parts", "paste", "pates", "pears", "prate", "apter", "aster", "taper", "tapes", "tares", "tarps", "tears", "traps", "sate", "sear", "seat", "sera", "spar", "spat", "star", "step", "rape", "raps", "rapt", "rasp", "rate", "rats", "reap", "reps", "rest", "ears", "east", "eats", "eras", "erst", "etas", "pare", "pars", "part", "past", "pate", "pats", "pear", "peas", "peat", "pert", "pest", "pets", "apes", "apse", "ares", "arts", "tape", "taps", "tare", "tarp", "tars", "tear", "teas", "trap", "tsar", "sap", "sat", "sea", "set", "spa", "rap", "rat", "rep", "ear", "eat", "era", "eta", "par", "pas", "pat", "pea", "per", "pet", "ape", "apt", "are", "art", "asp", "ate", "tap", "tar", "tea" ] ] 
-    ];
-
   var GameState = {
     setPuzzle: function(puzzle) {
       this.puzzleId = puzzle[0]
@@ -122,14 +114,18 @@
       return this.found.length + '/' + this.children.length;
     },
     isDone: function() { return this.found.length == this.children.length; },
+    // Returns true if the guess was new
     recordGuess: function(guess) {
       var g = guess.toLowerCase();
       if (this.children.indexOf(g) >= 0) {
         if (this.found.indexOf(g) >= 0) {
+          return false;
         } else {
           this.found.push(g);
+          return true;
         }
       }
+      return false;
     }
   };
 
@@ -178,16 +174,24 @@
   };
 
   function checkGuess(guess) {
-    var x = $('#word-' + guess);
-    x.text(guess); // Attempt to update the text anyway.
-    if (x.length) {
-      GameState.recordGuess(guess);
+    var word_bit = $('#word-' + guess);
+    if (word_bit.length) {
+      word_bit.text(guess); // Attempt to update the text anyway.
+      var recorded = GameState.recordGuess(guess);
+      if (recorded) {
+        $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 500);
+      } else {
+        $('#guess_text').effect('highlight', {"color": "#ffffaa"}, 500);
+        word_bit.effect('pulsate', {"times":1}, 250);
+      }
       View.updateScore(GameState.score());
       if (GameState.isDone()) {
         View.winner(puzzles.length > 0);
       }
     } else {
       View.incrementFails();
+      $('#guess_text').stop(true, true);
+      $('#guess_text').effect('highlight', { "color": "#ffaaaa" }, 500);
     }
   }
 
@@ -229,9 +233,13 @@
   });
 
   $('#guess').submit(function() {
-    var guess = $('#guess_text').val().toLowerCase();
-    checkGuess(guess);
-    View.resetInput();
+    try {
+      var guess = $('#guess_text').val().toLowerCase();
+      checkGuess(guess);
+      View.resetInput();
+    } catch(e) {
+      console.info(e);
+    }
     return false;
   });
 
@@ -248,6 +256,9 @@
   }
 
   $(function () {
-    reset(puzzles.pop());
+    var lol = function (puzzle, status) {
+      reset(puzzle);
+    }
+    $.get("/puzzles/next", {}, lol, "json");
   });
 
