@@ -12,7 +12,10 @@ import System.Exit
 import System.IO
 import Data.Char (isLower)
 
-data Puzzle = Puzzle String [String] deriving (Eq, Show, Read)
+data Puzzle = Puzzle String [String] deriving (Eq, Read)
+
+instance Show Puzzle where
+  show (Puzzle word vs) = "[" ++ show word ++ ", " ++ show vs ++ "]"
 
 newtype SortedWord = SortedWord (String, String) deriving Eq
 instance Show SortedWord where show (SortedWord (a,_)) = show a
