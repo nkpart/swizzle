@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'json'
 require 'activesupport'
+require 'haml'
 
 def json(x)
   JSON.pretty_generate(x)
@@ -17,7 +18,11 @@ end
 
 get "/puzzles/next" do
   id, word, children = Puzzles.random_element
-   
-  json([id, word, children.sample(10 + rand(10))])
+  # culled = children.sample(10 + rand(10))
+  json([id, word, children])
+end
+
+get "/" do
+  haml :index
 end
 

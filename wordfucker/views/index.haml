@@ -2,6 +2,7 @@
 %html
   %head
     %script{:src => "jquery-1.4.2.min.js"}
+    %script{:src => "jquery-ui-1.7.1.custom.min.js"}
 
   %body
     %h1#title
@@ -9,6 +10,7 @@
     #holes
 
     #score
+    #info
 
     %form#guess{:action => "#", :method => "get"}
       %input#guess_text
@@ -55,7 +57,13 @@
 
   #score {
     text-align: right;
-    margin: 1em 0;
+    margin: 0em 0;
+  }
+
+  #info {
+    text-align: right;
+    font-size: small;
+    margin: 0.5em 0;
   }
 
   #holes {
@@ -89,16 +97,17 @@
 :javascript
 
   var puzzles = [
-      ["acidic", ["acidic","acid","cad","aid"]],
-      ["cafe", ["cafe", "face", "ace"]],
-      ["canyon", ["canyon","annoy","canny","canon","anon","cony","cyan","nay","yon","any","can","cay","con","coy"]],
-      [ "tapers", [ "repast", "prates", "tapers", "septa", "spare", "spate", "spear", "sprat", "stare", "strap", "strep", "rapes", "rates", "reaps", "pares", "parse", "parts", "paste", "pates", "pears", "prate", "apter", "aster", "taper", "tapes", "tares", "tarps", "tears", "traps", "sate", "sear", "seat", "sera", "spar", "spat", "star", "step", "rape", "raps", "rapt", "rasp", "rate", "rats", "reap", "reps", "rest", "ears", "east", "eats", "eras", "erst", "etas", "pare", "pars", "part", "past", "pate", "pats", "pear", "peas", "peat", "pert", "pest", "pets", "apes", "apse", "ares", "arts", "tape", "taps", "tare", "tarp", "tars", "tear", "teas", "trap", "tsar", "sap", "sat", "sea", "set", "spa", "rap", "rat", "rep", "ear", "eat", "era", "eta", "par", "pas", "pat", "pea", "per", "pet", "ape", "apt", "are", "art", "asp", "ate", "tap", "tar", "tea" ] ] 
+      [2,"acidic", ["acidic","acid","cad","aid"]],
+      [3,"cafe", ["cafe", "face", "ace"]],
+      [4,"canyon", ["canyon","annoy","canny","canon","anon","cony","cyan","nay","yon","any","can","cay","con","coy"]],
+      [5, "tapers", [ "repast", "prates", "tapers", "septa", "spare", "spate", "spear", "sprat", "stare", "strap", "strep", "rapes", "rates", "reaps", "pares", "parse", "parts", "paste", "pates", "pears", "prate", "apter", "aster", "taper", "tapes", "tares", "tarps", "tears", "traps", "sate", "sear", "seat", "sera", "spar", "spat", "star", "step", "rape", "raps", "rapt", "rasp", "rate", "rats", "reap", "reps", "rest", "ears", "east", "eats", "eras", "erst", "etas", "pare", "pars", "part", "past", "pate", "pats", "pear", "peas", "peat", "pert", "pest", "pets", "apes", "apse", "ares", "arts", "tape", "taps", "tare", "tarp", "tars", "tear", "teas", "trap", "tsar", "sap", "sat", "sea", "set", "spa", "rap", "rat", "rep", "ear", "eat", "era", "eta", "par", "pas", "pat", "pea", "per", "pet", "ape", "apt", "are", "art", "asp", "ate", "tap", "tar", "tea" ] ] 
     ];
 
   var GameState = {
     setPuzzle: function(puzzle) {
-      this.rootWord = puzzle[0];
-      this.children = puzzle[1];
+      this.puzzleId = puzzle[0]
+      this.rootWord = puzzle[1];
+      this.children = puzzle[2];
       this.children.sort(function (a, b) { 
         var checkSize = a.length == b.length;
         if (checkSize) {
@@ -124,7 +133,6 @@
     }
   };
 
-
   var View = {
     winner: function (havePuzzles) {
       $('#party-time').css('display', 'block');
@@ -144,7 +152,7 @@
       $('.letter').addClass('not-pressed');
       $('#guess_text').val('');
     },
-    displayPuzzle: function(word, children) {
+    displayPuzzle: function(pid, word, children) {
       $('#fails').html('');
       $('#party-time').css('display', 'none');
       $('#guess_text').attr('disabled', false);
@@ -153,6 +161,7 @@
       }).join('');
       $('#title').html(show);
       $('#holes').html('');
+      $('#info').html('#' + pid);
       var words = GameState.children.slice(0);
       while (words.length > 0) {
         var chunk = words.splice(0, 5);
@@ -235,7 +244,7 @@
   function reset(puzzle) {
     GameState.setPuzzle(puzzle);
     View.updateScore(GameState.score());
-    View.displayPuzzle(GameState.rootWord, GameState.children);
+    View.displayPuzzle(GameState.puzzleId, GameState.rootWord, GameState.children);
   }
 
   $(function () {
