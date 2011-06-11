@@ -13,7 +13,6 @@ Puzzles = begin
     id, data = line.split(':')
     d[id] = JSON.parse(data)
   end
-  p d.keys
   class <<d
     def random_puzzle
       key = keys.random_element

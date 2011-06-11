@@ -259,6 +259,7 @@
     var lol = function (puzzle, status) {
       reset(puzzle);
     }
-    $.get("/puzzles/next", {}, lol, "json");
+    var puzzle_id = (window.location.hash != "") ? window.location.hash.substring(1) : "next";
+    $.get("/puzzles/" + puzzle_id, {}, lol, "json");
   });
 
