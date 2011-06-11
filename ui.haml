@@ -13,6 +13,7 @@
     %form#guess{:action => "#", :method => "get"}
       %input#guess_text
 
+    #fails
 
     #party-time{:style => "display: none"}
       HAVE A PARTY BECAUSE YOU WON!
@@ -42,6 +43,12 @@
 
   #party-time button {
     margin: 1em;
+  }
+
+  #fails {
+    text-align: center;
+    font-size: small;
+    word-wrap: break-word;
   }
 
   #score {
@@ -120,6 +127,7 @@
       $('#guess_text').val('');
     },
     displayPuzzle: function(word, children) {
+      $('#fails').html('');
       $('#party-time').css('display', 'none');
       $('#guess_text').attr('disabled', false);
       var show = $.map(shuffleWord(word), function(v, i) { 
@@ -131,7 +139,10 @@
         $('#holes').append('<li id=word-' + this + '>' + hidden(this) + '</li>');
       });
       $('#guess_text').focus();
-    }
+    },
+    incrementFails: function() {
+      $('#fails').append('.');
+    },
   };
 
   function checkGuess(guess) {
@@ -143,6 +154,8 @@
       if (GameState.isDone()) {
         View.winner(puzzles.length > 0);
       }
+    } else {
+      View.incrementFails();
     }
   }
 
