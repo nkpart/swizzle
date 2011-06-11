@@ -24,22 +24,19 @@
     var children = puzzle[1];
     var rootWord = puzzle[0];
     
-    var todo = new Array(children);
-    
+    var word = "";
     $('#title').text(rootWord);
     
     $('#guess').submit(function() {
       var guess = $('#guess_text').val().toLowerCase();
       $('#word-' + guess).text(guess);
       todo.delete(guess);
-      alert(todo);
     });
     
     function hide(word) { return word.replace(/./g,'*'); }
     
     $(function () { 
       $.each(children, function() {
-            
         $('#holes').append('<li id=word-' + this + '>' + hide(this) + '</li>');
       });
     });
