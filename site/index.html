@@ -56,17 +56,23 @@
 </style>
 <script type='text/javascript'>
   //<![CDATA[
-    var puzzle = ["cafe", ["face", "ace"]];
+    //var puzzle = ["cafe", ["face", "ace"]];
+    var puzzle = ["acidic", ["acidic","acid","cad","aid"]];
     
     var GameState = {
       setPuzzle: function(puzzle) {
         this.rootWord = puzzle[0];
         this.children = puzzle[1];
-        this.children.push(this.rootWord);
-        this.children.sort();
+        this.children.sort(function (a, b) { 
+          var checkSize = a.length == b.length;
+          if (checkSize) {
+            return a > b; 
+          } else {
+            return a.length < b.length;
+          }  
+        });
         this.found = [];
       },
-      numberDone: function () { return this.found.length; },
       score: function () {
         return this.found.length + '/' + this.children.length;
       },
@@ -96,6 +102,12 @@
         $('.letter').removeClass('pressed');
         $('.letter').addClass('not-pressed');
         $('#guess_text').val('');
+      },
+      displayPuzzle: function(word, children) {
+        var show = $.map(shuffleWord(word), function(v, i) { 
+          return '<span class="not-pressed letter value-' + v + '">' + v + '</span>';
+        }).join('');
+        $('#title').html(show);
       }
     };
     
@@ -125,27 +137,26 @@
       return shuffled;
     }
     
-    
-    function displayWord(word) {
-      return $.map(word, function(v, i) { 
-        return '<span class="not-pressed letter value-' + v + '">' + v + '</span>';
-      }).join('');
-    }
-    
-    $('#title').html(displayWord(shuffleWord(GameState.rootWord)));
-    
     $('#guess_text').keypress(function (e) {
       var press = String.fromCharCode(e.which);
       $('.not-pressed.value-' + press + ':first').addClass('pressed');
+      $('.not-pressed.value-' + press + ':first').removeClass('not-pressed');
       return;
     });
+    
+    function countChar(word, chr) {
+      return $.map(word, function (n,i) { if (n == chr) return n; else return null; });
+    }
     
     // Trapping backspace only here, doesn't get thrown up as a keypress
     $('#guess_text').keydown(function (e) {
       if (e.which == "8") {
         var f = $("#guess_text").val();
         var ch = f[f.length -1];
-        $('.pressed.value-' + ch + ':first').removeClass('pressed');
+        if (countChar(f, ch) <= countChar(GameState.rootWord, ch)) {
+          $('.pressed.value-' + ch + ':first').addClass('not-pressed');
+          $('.pressed.value-' + ch + ':first').removeClass('pressed');
+        }
       }
     });
     
@@ -164,6 +175,7 @@
       $.each(GameState.children, function() {
         $('#holes').append('<li id=word-' + this + '>' + hidden(this) + '</li>');
       });
+      View.displayPuzzle(GameState.rootWord, GameState.children);
     });
   //]]>
 </script>
