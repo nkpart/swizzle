@@ -6,13 +6,37 @@
   %body
     %h1#title
 
-    #holes
+    %ul#holes
+
+    %form#guess{:action => "#", :method => "get"}
+      %input#guess_text
+
+:css
+  ul#holes li {
+    font-family: monospace;
+  }
 
 :javascript
   var puzzle = ["face", ["cafe", "ace"]];
   var children = puzzle[1];
   var rootWord = puzzle[0];
 
+  var todo = new Array(children);
+
   $('#title').text(rootWord);
 
-  $(function () { alert('lol'); });
+  $('#guess').submit(function() {
+    var guess = $('#guess_text').val().toLowerCase();
+    $('#word-' + guess).text(guess);
+    todo.delete(guess);
+    alert(todo);
+  });
+
+  function hide(word) { return word.replace(/./g,'*'); }
+
+  $(function () { 
+    $.each(children, function() {
+          
+      $('#holes').append('<li id=word-' + this + '>' + hide(this) + '</li>');
+    });
+  });

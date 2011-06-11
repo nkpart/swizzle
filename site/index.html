@@ -5,17 +5,43 @@
   </head>
   <body>
     <h1 id='title'></h1>
-    <div id='holes'></div>
+    <ul id='holes'></ul>
+    <form action='#' id='guess' method='get'>
+      <input id='guess_text' />
+    </form>
   </body>
 </html>
+<style type='text/css'>
+  /*<![CDATA[*/
+    ul#holes li {
+      font-family: monospace;
+    }
+  /*]]>*/
+</style>
 <script type='text/javascript'>
   //<![CDATA[
     var puzzle = ["face", ["cafe", "ace"]];
     var children = puzzle[1];
     var rootWord = puzzle[0];
     
+    var todo = new Array(children);
+    
     $('#title').text(rootWord);
     
-    $(function () { alert('lol'); });
+    $('#guess').submit(function() {
+      var guess = $('#guess_text').val().toLowerCase();
+      $('#word-' + guess).text(guess);
+      todo.delete(guess);
+      alert(todo);
+    });
+    
+    function hide(word) { return word.replace(/./g,'*'); }
+    
+    $(function () { 
+      $.each(children, function() {
+            
+        $('#holes').append('<li id=word-' + this + '>' + hide(this) + '</li>');
+      });
+    });
   //]]>
 </script>

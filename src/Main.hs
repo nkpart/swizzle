@@ -64,7 +64,7 @@ doWord index h word =
       children = (foldl' (foldl' g) [] rest) :: [SortedWord]
    in hPrint h $ Puzzle word (map originalWord $ nub children) -- TODO, how do dupes happen 
   
-getWords = lines <$> readFile "/usr/share/dict/words"
+getWords = lines <$> readFile "good-words"
 
 buildIndex words = do
   -- TODO: this word list is pretty bogus
