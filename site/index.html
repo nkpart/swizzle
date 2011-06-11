@@ -6,38 +6,163 @@
   <body>
     <h1 id='title'></h1>
     <ul id='holes'></ul>
+    <div id='score'></div>
     <form action='#' id='guess' method='get'>
       <input id='guess_text' />
     </form>
+    <div id='party-time' style='display: none'>
+      HAVE A PARTY BECAUSE YOU WON!
+    </div>
+    <div id='log'></div>
   </body>
 </html>
 <style type='text/css'>
   /*<![CDATA[*/
+    body {
+      margin: 0 auto;
+      width: 400px;
+    }
+    
+    * {
+      font-family: 'Lucida Grande', sans-serif;
+    }
+    
+    #party-time {
+      font-size: 120%;
+      font-weight: bold;
+      text-align: center;
+      margin: 1em;
+    }
+    
+    #score {
+      text-align: right;
+      margin: 1em 0;
+    }
+    
     ul#holes li {
       font-family: monospace;
+    }
+    
+    input#guess_text {
+      font-size: 160%;    
+      font-weight: bold;
+      width: 100%;
+    }
+    
+    .pressed {
+      color: #ddd;
     }
   /*]]>*/
 </style>
 <script type='text/javascript'>
   //<![CDATA[
-    var puzzle = ["face", ["cafe", "ace"]];
-    var children = puzzle[1];
-    var rootWord = puzzle[0];
+    var puzzle = ["cafe", ["face", "ace"]];
     
-    var word = "";
-    $('#title').text(rootWord);
+    var GameState = {
+      setPuzzle: function(puzzle) {
+        this.rootWord = puzzle[0];
+        this.children = puzzle[1];
+        this.children.push(this.rootWord);
+        this.children.sort();
+        this.found = [];
+      },
+      numberDone: function () { return this.found.length; },
+      score: function () {
+        return this.found.length + '/' + this.children.length;
+      },
+      isDone: function() { return this.found.length == this.children.length; },
+      recordGuess: function(guess) {
+        var g = guess.toLowerCase();
+        if (this.children.indexOf(g) >= 0) {
+          if (this.found.indexOf(g) >= 0) {
+          } else {
+            this.found.push(g);
+          }
+        }
+      }
+    };
+    
+    GameState.setPuzzle(puzzle);
+    
+    var View = {
+      winner: function () {
+        $('#party-time').css('display', 'block');
+        $('#guess_text').attr('disabled', true);
+      },
+      updateScore: function (s) {
+        $('#score').html(s);
+      },
+      resetInput: function() {
+        $('.letter').removeClass('pressed');
+        $('.letter').addClass('not-pressed');
+        $('#guess_text').val('');
+      }
+    };
+    
+    function checkGuess(guess) {
+      var x = $('#word-' + guess);
+      x.text(guess); // Attempt to update the text anyway.
+      if (x.length) {
+        GameState.recordGuess(guess);
+        View.updateScore(GameState.score());
+        if (GameState.isDone()) {
+          View.winner();
+        }
+      }
+    }
+    
+    function shuffleWord(original) {
+      var indices = [];
+      for (var i = 0; i < original.length; ++i) {
+        var x = parseInt(Math.random() * original.length)
+        while (indices.indexOf(x) >= 0) {
+          x = parseInt(Math.random() * original.length)
+        }
+        indices.push(x)
+      }
+      // TODO: should not allow [1..]
+      var shuffled = $.map(indices, function(n,i) { return original[n]; }).join('');
+      return shuffled;
+    }
+    
+    
+    function displayWord(word) {
+      return $.map(word, function(v, i) { 
+        return '<span class="not-pressed letter value-' + v + '">' + v + '</span>';
+      }).join('');
+    }
+    
+    $('#title').html(displayWord(shuffleWord(GameState.rootWord)));
+    
+    $('#guess_text').keypress(function (e) {
+      var press = String.fromCharCode(e.which);
+      $('.not-pressed.value-' + press + ':first').addClass('pressed');
+      return;
+    });
+    
+    // Trapping backspace only here, doesn't get thrown up as a keypress
+    $('#guess_text').keydown(function (e) {
+      if (e.which == "8") {
+        var f = $("#guess_text").val();
+        var ch = f[f.length -1];
+        $('.pressed.value-' + ch + ':first').removeClass('pressed');
+      }
+    });
     
     $('#guess').submit(function() {
       var guess = $('#guess_text').val().toLowerCase();
-      $('#word-' + guess).text(guess);
-      todo.delete(guess);
+      checkGuess(guess);
+      View.resetInput();
+      return false;
     });
     
-    function hide(word) { return word.replace(/./g,'*'); }
+    function hidden(word) { return word.replace(/./g,'*'); }
     
-    $(function () { 
-      $.each(children, function() {
-        $('#holes').append('<li id=word-' + this + '>' + hide(this) + '</li>');
+    $(function () {
+      $('#guess_text').focus();
+      View.updateScore(GameState.score());
+      $.each(GameState.children, function() {
+        $('#holes').append('<li id=word-' + this + '>' + hidden(this) + '</li>');
       });
     });
   //]]>
