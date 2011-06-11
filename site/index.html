@@ -12,6 +12,12 @@
     </form>
     <div id='party-time' style='display: none'>
       HAVE A PARTY BECAUSE YOU WON!
+      <button>
+        Next Puzzle
+      </button>
+      <p id='no-puzzles' style='display: none'>
+        Oh, we ran out of puzzles.
+      </p>
     </div>
     <div id='log'></div>
   </body>
@@ -31,6 +37,10 @@
       font-size: 120%;
       font-weight: bold;
       text-align: center;
+      margin: 1em;
+    }
+    
+    #party-time button {
       margin: 1em;
     }
     
@@ -56,8 +66,10 @@
 </style>
 <script type='text/javascript'>
   //<![CDATA[
-    //var puzzle = ["cafe", ["face", "ace"]];
-    var puzzle = ["acidic", ["acidic","acid","cad","aid"]];
+    var puzzles = [
+        ["acidic", ["acidic","acid","cad","aid"]],
+        ["cafe", ["cafe", "face", "ace"]]
+      ];
     
     var GameState = {
       setPuzzle: function(puzzle) {
@@ -88,12 +100,17 @@
       }
     };
     
-    GameState.setPuzzle(puzzle);
     
     var View = {
-      winner: function () {
+      winner: function (havePuzzles) {
         $('#party-time').css('display', 'block');
         $('#guess_text').attr('disabled', true);
+        if (havePuzzles) {
+          $('#party-time button').focus();
+        } else {
+          $('#no-puzzles').css('display', 'block');
+          $('#party-time button').hide();
+        }
       },
       updateScore: function (s) {
         $('#score').html(s);
@@ -104,10 +121,17 @@
         $('#guess_text').val('');
       },
       displayPuzzle: function(word, children) {
+        $('#party-time').css('display', 'none');
+        $('#guess_text').attr('disabled', false);
         var show = $.map(shuffleWord(word), function(v, i) { 
           return '<span class="not-pressed letter value-' + v + '">' + v + '</span>';
         }).join('');
         $('#title').html(show);
+        $('#holes').html('');
+        $.each(GameState.children, function() {
+          $('#holes').append('<li id=word-' + this + '>' + hidden(this) + '</li>');
+        });
+        $('#guess_text').focus();
       }
     };
     
@@ -118,7 +142,7 @@
         GameState.recordGuess(guess);
         View.updateScore(GameState.score());
         if (GameState.isDone()) {
-          View.winner();
+          View.winner(puzzles.length > 0);
         }
       }
     }
@@ -167,15 +191,20 @@
       return false;
     });
     
+    $('#party-time button').click(function () {
+      reset(puzzles.pop());
+    });
+    
     function hidden(word) { return word.replace(/./g,'*'); }
     
-    $(function () {
-      $('#guess_text').focus();
+    function reset(puzzle) {
+      GameState.setPuzzle(puzzle);
       View.updateScore(GameState.score());
-      $.each(GameState.children, function() {
-        $('#holes').append('<li id=word-' + this + '>' + hidden(this) + '</li>');
-      });
       View.displayPuzzle(GameState.rootWord, GameState.children);
+    }
+    
+    $(function () {
+      reset(puzzles.pop());
     });
   //]]>
 </script>
