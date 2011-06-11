@@ -1,0 +1,25 @@
+Name:                equivocating
+Version:             0.1
+License:             OtherLicense
+License-file:        LICENSE
+Author:              Nick Partridge
+Maintainer:          nkpart@gmail.com
+Category:            Game
+Build-type:          Simple
+Cabal-version:       >=1.2
+
+Executable equivocating
+  Main-is: src/Main.hs             
+  
+  -- Packages needed in order to build this package.
+  Build-depends:
+    base >=4 && <5,
+    containers,
+    process
+  
+  -- Modules not exported by this package.
+  -- Other-modules:       
+  
+  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
+  -- Build-tools:         
+  

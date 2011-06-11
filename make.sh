@@ -1,1 +1,1 @@
-ghc -O get_words.sh
+ghc -rtsopts -O get_words.hs

@@ -1,3 +1,5 @@
+module Main where
+
 import Data.List
 import Data.Ord
 import System.Process
@@ -10,8 +12,11 @@ import System.Exit
 import System.IO
 import Data.Char (isLower)
 
+data Puzzle = Puzzle String [String] deriving (Eq, Show, Read)
+
 newtype SortedWord = SortedWord (String, String) deriving Eq
 instance Show SortedWord where show (SortedWord (a,_)) = show a
+originalWord (SortedWord (s, _)) = s
 sortedWord s = SortedWord (s, sort s)
 
 isSubset :: SortedWord -> String -> Bool
@@ -43,21 +48,33 @@ sizeIndex words = foldl' addWord IM.empty $ filter goodWord words
 findSize :: Int -> WordIndex -> M.Map Char [SortedWord]
 findSize n = fromMaybe M.empty . IM.lookup n 
 
-grabJust :: String -> Int -> WordIndex -> [SortedWord]
-grabJust xs n foo = concatMap (\k -> M.findWithDefault [] k $ findSize n foo) xs
+v n foo k = M.findWithDefault [] k $ findSize n foo
+
+grabJust :: String -> Int -> WordIndex -> [[SortedWord]]
+grabJust xs n foo = map (v n foo) xs
 
 grabAll :: Int -> WordIndex -> [SortedWord]
 grabAll n foo = concat . M.elems $ findSize n foo 
 
-main = do
+checkWord word acc w = if (w `isSubset` sort word) then w:acc else acc 
+
+doWord index h word = 
+  let rest = map (\n -> grabJust word n index) [3..5]
+      g = foldl' (checkWord word)
+      children = (foldl' (foldl' g) [] rest) :: [SortedWord]
+   in hPrint h $ Puzzle word (map originalWord $ nub children) -- TODO, how do dupes happen 
+  
+getWords = lines <$> readFile "/usr/share/dict/words"
+
+buildIndex words = do
   -- TODO: this word list is pretty bogus
-  words <- lines <$> readFile "/usr/share/dict/words"
   let index = sizeIndex words
   let sixers = filter (\w -> goodWord w && length w == 6)  words
-  withFile "data" WriteMode $ \h -> 
-    forM_ sixers $ \word -> do
-      let rest = map (\n -> grabJust word n index) [3..5]
-      hPrint h (word, map (filter (`isSubset` sort word)) rest)
+  return (index, sixers)
 
+processIt f (index, sixers) = withFile f WriteMode $ forM_ sixers . doWord index
+
+main = do
+  getWords >>= buildIndex >>= processIt "puzzles"
   putStrLn "Done."
 

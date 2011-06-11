@@ -1,1 +1,1 @@
-ghc -O -prof -auto-all -rtsopts get_words.sh
+ghc -O -prof -auto-all -rtsopts get_words.hs
