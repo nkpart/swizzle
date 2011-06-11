@@ -1,7 +1,18 @@
 !!!
 %html
   %head
+    %script{:src => "jquery-1.4.2.min.js"}
 
   %body
-    %h1 k
-  
+    %h1#title
+
+    #holes
+
+:javascript
+  var puzzle = ["face", ["cafe", "ace"]];
+  var children = puzzle[1];
+  var rootWord = puzzle[0];
+
+  $('#title').text(rootWord);
+
+  $(function () { alert('lol'); });

@@ -59,7 +59,7 @@ grabAll n foo = concat . M.elems $ findSize n foo
 checkWord word acc w = if (w `isSubset` sort word) then w:acc else acc 
 
 doWord index h word = 
-  let rest = map (\n -> grabJust word n index) [3..5]
+  let rest = map (\n -> grabJust word n index) [3..6]
       g = foldl' (checkWord word)
       children = (foldl' (foldl' g) [] rest) :: [SortedWord]
    in hPrint h $ Puzzle word (map originalWord $ nub children) -- TODO, how do dupes happen 
