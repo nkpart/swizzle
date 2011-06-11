@@ -5,7 +5,7 @@
   </head>
   <body>
     <h1 id='title'></h1>
-    <ul id='holes'></ul>
+    <div id='holes'></div>
     <div id='score'></div>
     <form action='#' id='guess' method='get'>
       <input id='guess_text' />
@@ -26,12 +26,14 @@
 <style type='text/css'>
   /*<![CDATA[*/
     body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       margin: 0 auto;
       width: 400px;
     }
     
-    * {
-      font-family: 'Lucida Grande', sans-serif;
+    h1#title {
+      font-size: 6em;
+      margin: 0.2em 0;
     }
     
     #party-time {
@@ -56,11 +58,21 @@
       margin: 1em 0;
     }
     
-    ul#holes li {
+    #holes {
+      font-family: monospace;
+      overflow: hidden;
+    }
+    
+    #holes ul {
+      float: left;
+    }
+    
+    #holes ul li {
       font-family: monospace;
     }
     
     input#guess_text {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 160%;    
       font-weight: bold;
       width: 100%;
@@ -75,7 +87,8 @@
   //<![CDATA[
     var puzzles = [
         ["acidic", ["acidic","acid","cad","aid"]],
-        ["cafe", ["cafe", "face", "ace"]]
+        ["cafe", ["cafe", "face", "ace"]],
+        ["canyon", ["canyon","annoy","canny","canon","anon","cony","cyan","nay","yon","any","can","cay","con","coy"]],
       ];
     
     var GameState = {
@@ -85,9 +98,9 @@
         this.children.sort(function (a, b) { 
           var checkSize = a.length == b.length;
           if (checkSize) {
-            return a > b; 
+            return a > b ? 1 : -1; 
           } else {
-            return a.length < b.length;
+            return a.length < b.length ? 1 : -1;
           }  
         });
         this.found = [];
@@ -136,9 +149,14 @@
         }).join('');
         $('#title').html(show);
         $('#holes').html('');
-        $.each(GameState.children, function() {
-          $('#holes').append('<li id=word-' + this + '>' + hidden(this) + '</li>');
-        });
+        var words = GameState.children.slice(0);
+        while (words.length > 0) {
+          var chunk = words.splice(0, 5);
+          var middle = $.map(chunk, function(val, i) {
+            return ('<li id=word-' + val + '>' + hidden(val) + '</li>');
+          }).join('\n');
+          $('#holes').append('<ul>' + middle + '</ul>');
+        }
         $('#guess_text').focus();
       },
       incrementFails: function() {
