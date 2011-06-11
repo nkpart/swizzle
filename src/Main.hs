@@ -59,14 +59,20 @@ grabJust xs n foo = map (v n foo) xs
 grabAll :: Int -> WordIndex -> [SortedWord]
 grabAll n foo = concat . M.elems $ findSize n foo 
 
+checkWord :: String -> [SortedWord] -> SortedWord -> [SortedWord]
 checkWord word acc w = if (w `isSubset` sort word) then w:acc else acc 
 
-doWord index h word = 
+makePuzzle :: WordIndex -> String -> Puzzle
+makePuzzle index word = 
   let rest = map (\n -> grabJust word n index) [3..6]
       g = foldl' (checkWord word)
       children = (foldl' (foldl' g) [] rest) :: [SortedWord]
-   in hPrint h $ Puzzle word (map originalWord $ nub children) -- TODO, how do dupes happen 
+   in Puzzle word (map originalWord $ nub children) -- TODO, how do dupes happen 
+
+doWord :: WordIndex -> Handle -> ([Char], Int) -> IO ()
+doWord index h (word, idx) = hPutStrLn h $ show idx ++ ":" ++ (show $ makePuzzle index word)
   
+getWords ::  IO [String]
 getWords = lines <$> readFile "good-words"
 
 buildIndex words = do
@@ -75,7 +81,8 @@ buildIndex words = do
   let sixers = filter (\w -> goodWord w && length w == 6)  words
   return (index, sixers)
 
-processIt f (index, sixers) = withFile f WriteMode $ forM_ sixers . doWord index
+processIt :: FilePath -> (WordIndex, [String]) -> IO ()
+processIt f (index, sixers) = withFile f WriteMode $ forM_ (zip sixers [1..]) . doWord index
 
 main = do
   getWords >>= buildIndex >>= processIt "puzzles"

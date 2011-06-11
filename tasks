@@ -1,3 +1,6 @@
-columns for the things that aren't done yet
 server end
 store solved puzzle numbers in local storage
+
+highlight words when they are found
+green/red feedback in the input box
+
