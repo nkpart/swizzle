@@ -21,11 +21,17 @@ Puzzles = begin
     end
 
     def find(id)
-      value = self.fetch(id)
-      letters = value[0].split('').shuffle.join('')
-      matches = value[1].sort_by { |x| [-x.length, x] }
-      xs = matches.map { |word| [word.length,`md5 -q -s #{word}`.chomp]  }
-      [id, letters, xs]
+      @cache ||= {}
+
+      @cache[id] || begin
+        value = self.fetch(id)
+        letters = value[0].split('').shuffle.join('')
+        matches = value[1].sort_by { |x| [-x.length, x] }
+        xs = matches.map { |word| [word.length,`md5 -q -s #{word}`.chomp]  }
+        ret = [id, letters, xs]
+        @cache[id] = ret
+        ret
+      end
     end
   end
   d
