@@ -23,8 +23,8 @@ Puzzles = begin
     def find(id)
       value = self.fetch(id)
       letters = value[0].split('').shuffle.join('')
-      matches = value[1].map { |word| [word.length,`md5 -q -s #{word}`.chomp]  }
-      xs = matches.sort_by { |x| [-x.length, x] }.reverse
+      matches = value[1].sort_by { |x| [-x.length, x] }
+      xs = matches.map { |word| [word.length,`md5 -q -s #{word}`.chomp]  }
       [id, letters, xs]
     end
   end
