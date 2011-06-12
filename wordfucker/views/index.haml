@@ -11,13 +11,19 @@
 
     #holes
 
-    #score
-    #info
-
     %form#guess{:action => "#", :method => "get"}
       %input#guess_text{ :autocapitalize => "off", :autocorrect => "off", :autocomplete => "off" }
-
     #fails
+
+    #gizmo
+      %span#score
+      %span.sep /
+      %a#current_puzzle{:href => "#"}
+        %span#info
+      %span.sep /
+      %a#new_puzzle{:href => "/" }
+        New Puzzle
+
 
     #party-time{:style => "display: none"}
       HAVE A PARTY BECAUSE YOU WON!

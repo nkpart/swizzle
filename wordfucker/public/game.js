@@ -7,7 +7,7 @@ var GameState = {
     this.found = [];
   },
   score: function () {
-    return this.found.length + '/' + this.children.length;
+    return this.found.length + ' of ' + this.children.length;
   },
   isDone: function() { return this.found.length == this.children.length; },
   // Returns true if the guess was new
@@ -50,6 +50,7 @@ var View = {
     $('#title').html(show);
     $('#holes').html('');
     $('#info').html('#' + pid);
+    $('#current_puzzle').attr('href','#' + pid);
     var words = children.slice(0);
     while (words.length > 0) {
       var chunk = words.splice(0, 5);
@@ -148,6 +149,7 @@ function hidden(size) {
 
 function receivePuzzle(puzzle) {
   var puzzleId = puzzle[0];
+  window.location.hash = "#" + puzzleId;
   GameState.setPuzzle(puzzle);
   View.updateScore(GameState.score());
   View.displayPuzzle(GameState.puzzleId, GameState.letters, GameState.children);
