@@ -81,9 +81,9 @@ function checkGuess(guess, loading) {
     var recorded = GameState.recordGuess(g, sha);
     if (!loading) {
       if (recorded) {
-        $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 2000);
+        $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 200);
       } else {
-        $('#guess_text').effect('highlight', {"color": "#ffffaa"}, 2000);
+        $('#guess_text').effect('highlight', {"color": "#ffffaa"}, 200);
         word_bit.effect('pulsate', {"times":1}, 250);
       }
     }
