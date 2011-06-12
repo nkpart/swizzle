@@ -62,6 +62,14 @@ var View = {
     }
     $('#guess_text').focus();
   },
+  showPastGames: function(games) {
+    var elem = $('#past_games')[0],
+        html = "";
+    $.each(games, function() {
+      html += '<a href="#' + this + '">' + this + '</a>'
+    });
+    elem.innerHTML = html;
+  },
   showFail: function(skipAnims) {
     $('#fails').append('&#10008;');
     if (!skipAnims) {  
@@ -83,6 +91,7 @@ function checkGuess(guess, loading) {
     var recorded = GameState.recordGuess(g, sha);
     Data.writeGuesses(GameState);
     if (!loading) {
+      Data.recordStarted(GameState.puzzleId);
       if (recorded) {
         $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 200);
       } else {
@@ -159,7 +168,7 @@ function receivePuzzle(puzzle) {
   GameState.setPuzzle(puzzle);
   View.updateScore(GameState.score());
   View.displayPuzzle(GameState.puzzleId, GameState.letters, GameState.children);
-  //View.showPastGames(Data.pastGames());
+  View.showPastGames(Data.pastGames());
   var guesses = Data.previousGuesses(puzzleId);
   var fails = Data.previousFails(puzzleId);
   $.each(guesses, function() { checkGuess(this, true); });
@@ -187,7 +196,6 @@ var Data = {
     return raw ? JSON.parse(raw) : [];
   },
   writeGuesses: function(gameState) {
-    this.recordStarted(gameState.puzzleId);
     localStorage[gameState.puzzleId] = JSON.stringify(gameState.found);
   },
   gameWon: function(puzzleId) {
@@ -234,6 +242,9 @@ var Data = {
 
 $(function () {
   Data.init();
+  $('#past_games a').live('click', function () {
+    requestPuzzle($(this).attr('href').substring(1));
+  });
   var puzzleId = (window.location.hash != "") ? window.location.hash.substring(1) : undefined;
   requestPuzzle(puzzleId);
 });
