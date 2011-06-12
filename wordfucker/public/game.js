@@ -18,7 +18,6 @@ var GameState = {
         return false;
       } else {
         this.found.push(g);
-        localStorage[this.puzzleId] = JSON.stringify(this.found);
         return true;
       }
     }
@@ -63,13 +62,16 @@ var View = {
     }
     $('#guess_text').focus();
   },
-  showFail: function() {
+  showFail: function(skipAnims) {
     $('#fails').append('&#10008;');
-    $('#guess_text').stop(true, true);
-    $('#guess_text').effect('highlight', { "color": "#ffaaaa" }, 500);
+    if (!skipAnims) {  
+      $('#guess_text').stop(true, true);
+      $('#guess_text').effect('highlight', { "color": "#ffaaaa" }, 500);
+    }
   },
 };
 
+// Disables animations for loading
 function checkGuess(guess, loading) {
   var g = guess.toLowerCase();
   var sha = MD5(g); 
@@ -79,6 +81,7 @@ function checkGuess(guess, loading) {
     word_bit[0].innerHTML = guess; // Attempt to update the text anyway.
     word_bit.removeClass('hidden-word');
     var recorded = GameState.recordGuess(g, sha);
+    Data.writeGuesses(GameState);
     if (!loading) {
       if (recorded) {
         $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 200);
@@ -94,6 +97,7 @@ function checkGuess(guess, loading) {
   } else {
     // this is bad when loading, means the puzzle has changed.
     if (!loading) {
+      Data.recordFail(GameState.puzzleId);
       View.showFail();
     }
   }
@@ -155,7 +159,9 @@ function receivePuzzle(puzzle) {
   View.updateScore(GameState.score());
   View.displayPuzzle(GameState.puzzleId, GameState.letters, GameState.children);
   var guesses = Data.previousGuesses(puzzleId);
+  var fails = Data.previousFails(puzzleId);
   $.each(guesses, function() { checkGuess(this, true); });
+  for (var i = 0; i < fails; i++) { View.showFail(true); }
   Data.recordVisit(puzzleId);
 }
 
@@ -167,7 +173,7 @@ function requestPuzzle(id) {
 var Data = {
   init: function() {
     if (localStorage.puzzles == undefined) {
-      localStorage.puzzles = JSON.stringify([]);
+      localStorage.puzzles = JSON.stringify({});
     }   
   },
   recordVisit: function(pid) {
@@ -178,8 +184,24 @@ var Data = {
   previousGuesses: function(puzzleId) {
     var raw = localStorage[puzzleId]; 
     return raw ? JSON.parse(raw) : [];
+  },
+  writeGuesses: function(gameState) {
+    localStorage[gameState.puzzleId] = JSON.stringify(gameState.found);
+  },
+  recordFail: function(puzzleId) {
+    var key = puzzleId + '-fails';
+    var init = localStorage[key]; 
+    localStorage[key] = init ? JSON.parse(init) + 1: 1;
+  },
+  previousFails: function(puzzleId) {
+    var key = puzzleId + '-fails';
+    var v = localStorage[key];
+    return v ? JSON.parse(v) : 0;
   }
 }
+
+// what games you've started
+// what games you've finished
 
 $(function () {
   Data.init();
