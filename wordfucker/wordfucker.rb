@@ -13,15 +13,19 @@ Puzzles = begin
     id, data = line.split(':')
     d[id] = JSON.parse(data)
   end
+
   class <<d
     def random_puzzle
       key = keys.random_element
-      [key, *self[key]]
+      find(key)
     end
 
     def find(id)
       value = self.fetch(id)
-      [id, *value]
+      letters = value[0].split('').shuffle.join('')
+      matches = value[1].map { |word| [word.length,`md5 -q -s #{word}`.chomp]  }
+      xs = matches.sort_by { |x| [-x.length, x] }
+      [id, letters, xs]
     end
   end
   d
