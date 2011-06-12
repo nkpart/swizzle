@@ -14,6 +14,8 @@ Executable equivocating
   Build-depends:
     base >=4 && <5,
     containers,
-    process
+    process,
+    random-shuffle,
+    random
   
   -- Other-modules:       

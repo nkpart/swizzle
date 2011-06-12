@@ -11,6 +11,8 @@ import qualified Data.Map as M
 import System.Exit
 import System.IO
 import Data.Char (isLower)
+import System.Random
+import System.Random.Shuffle
 
 data Puzzle = Puzzle String [String] deriving (Eq, Read)
 
@@ -82,7 +84,10 @@ buildIndex words = do
   return (index, sixers)
 
 processIt :: FilePath -> (WordIndex, [String]) -> IO ()
-processIt f (index, sixers) = withFile f WriteMode $ forM_ (zip sixers [1..]) . doWord index
+processIt f (index, sixers) = do
+  gen <- getStdGen
+  let shuffled = shuffle' sixers (length sixers) gen
+  withFile f WriteMode $ forM_ (zip shuffled [1..]) . doWord index
 
 main = do
   getWords >>= buildIndex >>= processIt "puzzles"
