@@ -1,2 +1,2 @@
 store solved puzzle numbers in local storage
-load specific puzzles from the server
+send down hashed words and lengths to the client
