@@ -95,6 +95,10 @@
     color: #ddd;
   }
 
+  .hidden-word {
+    color: #999
+  } 
+
 :javascript
   var GameState = {
     setPuzzle: function(puzzle) {
@@ -158,7 +162,7 @@
         var chunk = words.splice(0, 5);
         var middle = $.map(chunk, function(val, i) {
           var sha = val[1];
-          return ('<li id=word-' + sha + '>' + hidden(val[0]) + '</li>');
+          return ('<li class=hidden-word id=word-' + sha + '>' + hidden(val[0]) + '</li>');
         }).join('\n');
         $('#holes').append('<ul>' + middle + '</ul>');
       }
@@ -174,7 +178,9 @@
     var sha = MD5(g); 
     var word_bit = $('#word-' + sha);
     if (word_bit.length) {
+      // TODO: lot of view shiz here
       word_bit.text(guess); // Attempt to update the text anyway.
+      word_bit.removeClass('hidden-word');
       var recorded = GameState.recordGuess(g, sha);
       if (recorded) {
         $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 500);
