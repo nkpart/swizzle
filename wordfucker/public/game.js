@@ -93,6 +93,7 @@ function checkGuess(guess, loading) {
     View.updateScore(GameState.score());
     if (GameState.isDone()) {
       View.winner();
+      Data.gameWon(GameState.puzzleId);
     }
   } else {
     // this is bad when loading, means the puzzle has changed.
@@ -158,11 +159,11 @@ function receivePuzzle(puzzle) {
   GameState.setPuzzle(puzzle);
   View.updateScore(GameState.score());
   View.displayPuzzle(GameState.puzzleId, GameState.letters, GameState.children);
+  //View.showPastGames(Data.pastGames());
   var guesses = Data.previousGuesses(puzzleId);
   var fails = Data.previousFails(puzzleId);
   $.each(guesses, function() { checkGuess(this, true); });
   for (var i = 0; i < fails; i++) { View.showFail(true); }
-  Data.recordVisit(puzzleId);
 }
 
 function requestPuzzle(id) {
@@ -172,21 +173,45 @@ function requestPuzzle(id) {
 
 var Data = {
   init: function() {
-    if (localStorage.puzzles == undefined) {
-      localStorage.puzzles = JSON.stringify({});
+    if (localStorage.startedGames == undefined) {
+      localStorage.startedGames = JSON.stringify({});
     }   
   },
-  recordVisit: function(pid) {
-    var pids = JSON.parse(localStorage.puzzles);
-    pids.push(pid);
-    localStorage.puzzles = JSON.stringify(pids);
+  recordStarted: function(pid) {
+    var pids = JSON.parse(localStorage.startedGames);
+    pids[pid] = new Date();
+    localStorage.startedGames = JSON.stringify(pids);
   },
   previousGuesses: function(puzzleId) {
     var raw = localStorage[puzzleId]; 
     return raw ? JSON.parse(raw) : [];
   },
   writeGuesses: function(gameState) {
+    this.recordStarted(gameState.puzzleId);
     localStorage[gameState.puzzleId] = JSON.stringify(gameState.found);
+  },
+  gameWon: function(puzzleId) {
+    var pids = JSON.parse(localStorage.startedGames);
+    delete pids[puzzleId];
+    localStorage.startedGames = JSON.stringify(pids);
+  },
+  pastGames: function() {
+    var games = JSON.parse(localStorage.startedGames);
+    var result = [];
+    $.each(games, function(key, value) {
+      result.push([key, value]);
+    });
+    result.sort(function (a,b) {
+      var aa = a[1];
+      var bb = b[1];
+      if (aa > bb) {
+        return -1;
+      } else if (aa < bb) {
+        return 1;
+      }
+      return 0;
+    });
+    return $.map(result, function(v,i) { return v[0]; });
   },
   recordFail: function(puzzleId) {
     var key = puzzleId + '-fails';
