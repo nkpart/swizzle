@@ -1,33 +1,33 @@
 !!!
 %html
   %head
-    %script{ :src => "jquery-1.4.2.min.js" }
-    %script{ :src => "webtoolkit.md5.js" }
-    %script{ :src => "jquery-ui-1.8.13.custom.min.js" }
+    %title Words
     %link{ :rel => "stylesheet", :type => "text/css", :href => "styles.css" }
+    %meta{ :name => 'viewport', :content => 'width=400px, minimum-scale=1.2, maximum-scale=1.2' }
 
   %body
     %h1#title
 
     #holes
 
+    #party-time
+      \~ YOU WON ~
+
     %form#guess{:action => "#", :method => "get"}
+      #letters-preview
       %input#guess_text{ :autocapitalize => "off", :autocorrect => "off", :autocomplete => "off" }
     #fails
 
     #gizmo
       %span#score
-      %span.sep /
+      
+      &rarr;
       %a#current_puzzle{:href => "#"}
         %span#info
-      %span.sep /
-      %a#new_puzzle{:href => "/" }
-        New Puzzle
+      
+      %a#new_puzzle{:href => "/" } New Puzzle
 
-
-    #party-time{:style => "display: none"}
-      HAVE A PARTY BECAUSE YOU WON!
-      %button
-        Next Puzzle
-
-%script{ :src => "game.js" }
+  %script{ :src => "jquery-1.4.2.min.js" }
+  %script{ :src => "webtoolkit.md5.js" }
+  %script{ :src => "jquery-ui-1.8.13.custom.min.js" }
+  %script{ :src => "game.js" }

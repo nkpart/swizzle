@@ -1,45 +1,58 @@
-body {
+html, body {
+  background: url(/images/bg.png);
   font-family: 'Helvetica Neue', Arial, sans-serif;
   margin: 0 auto;
   width: 400px;
 }
 
 h1#title {
+  color: #222;
   font-size: 6em;
   margin: 0.2em 0;
+  text-shadow: white 0 1px 0;
 }
 
 #party-time {
-  font-size: 120%;
+  color: #400080;
+  display: none;
+  font-size: 150%;
   font-weight: bold;
   text-align: center;
-  margin: 1em;
-}
-
-#party-time button {
-  margin: 1em;
+  text-shadow: #6804CB 0 0 20px;
+  margin: 0.5em;
 }
 
 #fails {
-  text-align: center;
+  color: #c00;
   font-size: small;
-  word-wrap: break-word;
+  margin: 10px 0;
   min-height: 1.2em;
+  word-wrap: break-word;
 }
 
-#gizmo {
-  text-align: right;
+#gizmo { 
+  text-align: center; 
 }
 
-#gizmo .sep {
-  font-weight: bold;
-  color: #ccc;
+#gizmo > span { 
+  margin-right: 5px; 
 }
+
 #score {
+  font-size: 120%;
 }
 
-#info {
+#current_puzzle {
+  color: #555; 
+  padding: 1.3% 2.2%; 
+  text-decoration: none;
 }
+#current_puzzle:hover {
+  text-decoration: underline;
+}
+
+#new_puzzle { background: url(/images/btn-green-bg.png) repeat-x #082; border: 1px solid #061; color: white; cursor: pointer; font-size: 90%; padding: 1.3% 2.2%; text-decoration: none; 
+  -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
 
 #saved_games {
   -moz-column-count: 3;
@@ -67,20 +80,37 @@ h1#title {
   font-family: monospace;
 }
 
+form {
+  margin: 1em 0 0 0;
+}
+
+#letters-preview {
+  color: #777;
+  letter-spacing: 2px;
+  margin: 0 0 3px 0;
+  text-align: center;
+}
+
 input#guess_text {
+  border: 1px solid #999;
+  color: #004080;
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 160%;    
+  font-size: 160%;
   font-weight: bold;
-  width: 100%;
-  margin: 1em 0em 0em;
+  padding: 1% 2%;
+  width: 95%;
+  margin: 0;
+  outline: none;
+  
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .pressed {
-  color: #ddd;
+  color: #999;
 }
 
 .hidden-word {
   color: #999
-} 
-
-
+}

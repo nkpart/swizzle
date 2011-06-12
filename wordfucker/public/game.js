@@ -48,8 +48,9 @@ var View = {
       return '<span class="not-pressed letter value-' + v + '">' + v + '</span>';
     }).join('');
     $('#title').html(show);
+    $('#letters-preview').html(word);
     $('#holes').html('');
-    $('#info').html('#' + pid);
+    $('#info').html('Puzzle #' + pid);
     $('#current_puzzle').attr('href','#' + pid);
     var words = children.slice(0);
     while (words.length > 0) {
@@ -63,7 +64,7 @@ var View = {
     $('#guess_text').focus();
   },
   showFail: function() {
-    $('#fails').append('.');
+    $('#fails').append('&#10008;');
     $('#guess_text').stop(true, true);
     $('#guess_text').effect('highlight', { "color": "#ffaaaa" }, 500);
   },
@@ -80,9 +81,9 @@ function checkGuess(guess, loading) {
     var recorded = GameState.recordGuess(g, sha);
     if (!loading) {
       if (recorded) {
-        $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 500);
+        $('#guess_text').effect('highlight', {"color": "#aaffaa"}, 2000);
       } else {
-        $('#guess_text').effect('highlight', {"color": "#ffffaa"}, 500);
+        $('#guess_text').effect('highlight', {"color": "#ffffaa"}, 2000);
         word_bit.effect('pulsate', {"times":1}, 250);
       }
     }
@@ -142,7 +143,7 @@ $('#party-time button').click(function () {
 function hidden(size) { 
   var word = "";
   for (var i = 0; i < size; i++) {
-    word += "*";
+    word += "-";
   }
   return word;
 }
