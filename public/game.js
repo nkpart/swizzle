@@ -113,12 +113,16 @@ function checkGuess(guess, loading) {
   }
 }
 
-$('#guess_text').keypress(function (e) {
-  var press = String.fromCharCode(e.which).toLowerCase();
+function enterLetter(press) {
   if (GameState.letters.indexOf(press) >= 0) {
     $('.not-pressed.value-' + press + ':first').addClass('pressed');
     $('.not-pressed.value-' + press + ':first').removeClass('not-pressed');
   }
+}
+
+$('#guess_text').keypress(function (e) {
+  var press = String.fromCharCode(e.which).toLowerCase();
+  enterLetter(press);
 });
 
 function countChar(word, chr) {
@@ -242,9 +246,23 @@ var Data = {
 
 $(function () {
   Data.init();
-  $('#past_games a').live('click', function () {
+  $('#past_games a').live('click', function() {
     requestPuzzle($(this).attr('href').substring(1));
   });
+  $('.letter').live('touch-start', function() {
+    alert('lol');
+
+  });
+  if (/iPhone|iPad/.test(navigator.userAgent)) {
+    document.addEventListener('touchstart', function (e) {
+      if ($(e.target).parent().hasClass('letter')) {
+        var letter = $(e.target).parent().text();
+        var input = $('#guess_text');
+        input.val(input.val() + letter);
+        enterLetter(letter);
+      }
+    });
+  }
   var puzzleId = (window.location.hash != "") ? window.location.hash.substring(1) : undefined;
   requestPuzzle(puzzleId);
 });
