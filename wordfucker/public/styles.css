@@ -47,12 +47,26 @@ h1#title {
   padding: 1.3% 2.2%; 
   text-decoration: none;
 }
+
 #current_puzzle:hover {
   text-decoration: underline;
 }
 
 #new_puzzle { background: url(/images/btn-green-bg.png) repeat-x #082; border: 1px solid #061; color: white; cursor: pointer; font-size: 90%; padding: 1.3% 2.2%; text-decoration: none; 
   -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
+
+#past_games {
+  margin: 1em 0;
+  padding: 0.5em 0;
+  text-align: center;
+  line-height: 2em;
+}
+
+#past_games a {
+  color: #555;
+  padding: 1.3% 2.2%;
+  text-decoration: none;
+}
 
 #saved_games {
   -moz-column-count: 3;

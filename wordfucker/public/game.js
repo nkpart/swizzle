@@ -64,9 +64,9 @@ var View = {
   },
   showPastGames: function(games) {
     var elem = $('#past_games')[0],
-        html = "";
+        html = "<h3>Past Games</h3>";
     $.each(games, function() {
-      html += '<a href="#' + this + '">' + this + '</a>'
+      html += '<a href="#' + this + '">#' + this + '</a> '
     });
     elem.innerHTML = html;
   },
