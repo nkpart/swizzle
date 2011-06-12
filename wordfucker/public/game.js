@@ -192,6 +192,10 @@ var Data = {
     var key = puzzleId + '-fails';
     var init = localStorage[key]; 
     localStorage[key] = init ? JSON.parse(init) + 1: 1;
+    var knownStarter = localStorage.hasOwnProperty(puzzleId + '-played');
+    if (!knownStarter) {
+      localStorage[puzzleId + '-played'] = 0;
+    }
   },
   previousFails: function(puzzleId) {
     var key = puzzleId + '-fails';
