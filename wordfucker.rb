@@ -9,7 +9,7 @@ end
 
 Puzzles = begin
   d = {} 
-  IO.foreach(File.join(File.dirname(__FILE__), '..', 'puzzles')) do |line|
+  IO.foreach(File.join(File.dirname(__FILE__), 'puzzles')) do |line|
     id, data = line.split(':')
     d[id] = JSON.parse(data)
   end
