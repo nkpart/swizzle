@@ -1,3 +1,3 @@
-require './wordfucker'
+require './swizzle'
 
 run Sinatra::Application
