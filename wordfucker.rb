@@ -1,10 +1,15 @@
 require 'sinatra'
 require 'json'
-require 'activesupport'
 require 'haml'
+require 'digest/md5'
+  digest = Digest::MD5.hexdigest("Hello World\n")
 
 def json(x)
   JSON.pretty_generate(x)
+end
+
+def md5(x)
+  Digest::MD5.hexdigest(x)
 end
 
 Puzzles = begin
@@ -16,22 +21,17 @@ Puzzles = begin
 
   class <<d
     def random_puzzle
-      key = keys.random_element
+      index = rand(keys.length) 
+      key = keys[index]
       find(key)
     end
 
     def find(id)
-      @cache ||= {}
-
-      @cache[id] || begin
         value = self.fetch(id)
         letters = value[0].split('').shuffle.join('')
         matches = value[1].sort_by { |x| [-x.length, x] }
-        xs = matches.map { |word| [word.length,`md5 -q -s #{word}`.chomp]  }
-        ret = [id, letters, xs]
-        @cache[id] = ret
-        ret
-      end
+        xs = matches.map { |word| [word.length, md5(word)] }
+        [id, letters, xs]
     end
   end
   d
