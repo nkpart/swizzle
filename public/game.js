@@ -196,11 +196,11 @@ var Data = {
     localStorage.startedGames = JSON.stringify(pids);
   },
   previousGuesses: function(puzzleId) {
-    var raw = localStorage[puzzleId]; 
+    var raw = localStorage.getItem(puzzleId); 
     return raw ? JSON.parse(raw) : [];
   },
   writeGuesses: function(gameState) {
-    localStorage[gameState.puzzleId] = JSON.stringify(gameState.found);
+    localStorage.setItem(gameState.puzzleId, JSON.stringify(gameState.found));
   },
   gameWon: function(puzzleId) {
     var pids = JSON.parse(localStorage.startedGames);
@@ -227,16 +227,16 @@ var Data = {
   },
   recordFail: function(puzzleId) {
     var key = puzzleId + '-fails';
-    var init = localStorage[key]; 
-    localStorage[key] = init ? JSON.parse(init) + 1: 1;
+    var init = localStorage.getItem(key); 
+    localStorage.setItem(key, init ? JSON.parse(init) + 1: 1);
     var knownStarter = localStorage.hasOwnProperty(puzzleId + '-played');
     if (!knownStarter) {
-      localStorage[puzzleId + '-played'] = 0;
+      localStorage.setItem(puzzleId + '-played', 0);
     }
   },
   previousFails: function(puzzleId) {
     var key = puzzleId + '-fails';
-    var v = localStorage[key];
+    var v = localStorage.getItem(key);
     return v ? JSON.parse(v) : 0;
   }
 }
